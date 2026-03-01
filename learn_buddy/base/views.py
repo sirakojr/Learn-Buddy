@@ -1,12 +1,10 @@
 from django.shortcuts import render, redirect
+from rest_framework import viewsets
+from .serializers import TopicSerializer, RoomSerializer, MessageSerializer
 from django.db.models import Q
-from .models import Room, Topic
 from .forms import RoomForm
-
-
-def loginPage(request):
-    context = {}
-    return render(request, 'base/login_register.html', context)
+from .models import Topic, Room, Message
+from rest_framework.permissions import IsAuthenticated
 
 def home(request):
     q = request.GET.get('q') or ''
@@ -52,3 +50,19 @@ def deleteRoom(request, pk):
         return redirect('home')
     context = {'obj': room}
     return render(request, 'base/delete.html', context)
+
+
+
+class TopicViewSet(viewsets.ModelViewSet):
+    queryset = Topic.objects.all()
+    serializer_class = TopicSerializer
+
+
+class RoomViewSet(viewsets.ModelViewSet):
+    queryset = Room.objects.all()
+    serializer_class = RoomSerializer
+    permission_classes = [IsAuthenticated]
+
+class MessageViewSet(viewsets.ModelViewSet):
+    queryset = Message.objects.all()
+    serializer_class = MessageSerializer
